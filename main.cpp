@@ -24,14 +24,14 @@ using namespace std;
 
 #define N 1000
 
-int members, match[N], rmatch[N];
+int n, match[N], rmatch[N];
 bool mfree[N], ffree[N], vis[N][N];
-string male[N], female[N];
+string group1[N], group2[N];
 map<string, int> midx, fidx;
 vector<int> mv[N], fv[N];
 
-bool ifFreeManAvailable(){
-    for ( int i = 0 ; i < members ; i ++ ){
+bool ifFreeG1Available(){
+    for ( int i = 0 ; i < n ; i ++ ){
         if ( mfree[i] == true ){
             return true;
         }
@@ -39,17 +39,17 @@ bool ifFreeManAvailable(){
     return false;
 }
 
-int findFreeMan(){
-    for ( int i = 0 ; i < members ; i ++ ){
+int findFreeG1(){
+    for ( int i = 0 ; i < n ; i ++ ){
         if ( mfree[i] == true ){
             return i;
         }
     }
 }
 
-bool ifWomenPrefer(int w, int x, int y){
+bool ifG2Prefer(int w, int x, int y){
     int id1 = 0, id2 = 0;
-    for ( int i = 0 ; i < members - 1 ; i ++ ){
+    for ( int i = 0 ; i < n - 1 ; i ++ ){
         if(fv[w][i] == x){
             id1 = i;
         }
@@ -65,73 +65,73 @@ bool ifWomenPrefer(int w, int x, int y){
 
 int main(int argc, char** argv) {
     
-    cin >> members;
+    cin >> n;
     
     int i, j;
-    for ( i = 0 ; i < members ; i ++ ){
-        cin >> male[i];
-        midx[male[i]] = i;
+    for ( i = 0 ; i < n ; i ++ ){
+        cin >> group1[i];
+        midx[group1[i]] = i;
     }
     
-    for ( i = 0 ; i < members ; i ++ ){
-        cin >> female[i];
-        fidx[female[i]] = i;
+    for ( i = 0 ; i < n ; i ++ ){
+        cin >> group2[i];
+        fidx[group2[i]] = i;
     }
     
-    for ( i = 0 ; i < members ; i ++ ){
-        for ( j = 0 ; j < members - 1 ; j ++ ){
+    for ( i = 0 ; i < n ; i ++ ){
+        for ( j = 0 ; j < n - 1 ; j ++ ){
             string choice;
             cin >> choice;
             mv[i].push_back(fidx[choice]);
         }
     }
     
-    for ( i = 0 ; i < members ; i ++ ){
-        for ( j = 0 ; j < members - 1 ; j ++ ){
+    for ( i = 0 ; i < n ; i ++ ){
+        for ( j = 0 ; j < n - 1 ; j ++ ){
             string choice;
             cin >> choice;
             fv[i].push_back(midx[choice]);
         }
     }
 
-    for ( i = 0 ; i < members ; i ++ ) for ( j = 0 ; j < members ; j ++ ) vis[i][j] = false;
+    for ( i = 0 ; i < n ; i ++ ) for ( j = 0 ; j < n ; j ++ ) vis[i][j] = false;
     
-    // Male Favourable Algorithm
+    // Group1 Favourable Algorithm
     
-    for ( i = 0 ; i < members ; i ++ ){
+    for ( i = 0 ; i < n ; i ++ ){
         mfree[i] = true;
         ffree[i] = true;
     }
     
-    int woman;
+    int sel;
     
-    while(ifFreeManAvailable()){
-        int man = findFreeMan();
-        for ( i = 0 ; i < members - 1 ; i ++ ){
-            woman = mv[man][i];
-            if ( vis[man][woman] == false ){
-                vis[man][woman] = true;
+    while(ifFreeG1Available()){
+        int fel = findFreeG1();
+        for ( i = 0 ; i < n - 1 ; i ++ ){
+            sel = mv[fel][i];
+            if ( vis[fel][sel] == false ){
+                vis[fel][sel] = true;
                 break;
             }
         }
-        if ( ffree[woman] == true ){
-            match[man] = woman;
-            rmatch[woman] = man;
-            mfree[man] = false;
-            ffree[woman] = false;
+        if ( ffree[sel] == true ){
+            match[fel] = sel;
+            rmatch[sel] = fel;
+            mfree[fel] = false;
+            ffree[sel] = false;
         }
         else{
-            if(ifWomenPrefer(woman, man, rmatch[woman])){
-                mfree[rmatch[woman]] = true;
-                match[man] = woman;
-                mfree[man] = false;
-                rmatch[woman] = man;
+            if(ifG2Prefer(sel, fel, rmatch[sel])){
+                mfree[rmatch[sel]] = true;
+                match[fel] = sel;
+                mfree[fel] = false;
+                rmatch[sel] = fel;
             }
         }
     }
     
-    for ( i = 0 ; i < members ; i ++ ){
-        cout << i << " Engaged to " << match[i] << "\n";
+    for ( i = 0 ; i < n ; i ++ ){
+        cout << i << " matched to " << match[i] << "\n";
     }
     
     return 0;
